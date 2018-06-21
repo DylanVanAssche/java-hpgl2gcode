@@ -21,7 +21,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 
 import model.CommandFactory;
+import model.Configuration;
 import model.HPGLReader;
+import view.MainView;
 
 public class Controller {
 	private static Controller controller;
@@ -37,8 +39,16 @@ public class Controller {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}*/
-		
-		CommandFactory.newInstance().parseHPGLCode("PA25,25;");
+		// Configuration for each JOB: engraving, milling, drilling all different jobs!
+		Configuration configuration = new Configuration(20000, 10.0, -0.165, 500, 300, 40.0, 3.0); // USER BASED config via GUI
+		System.out.println(CommandFactory.newInstance().parseHPGLCode("IN;", configuration).getGCodeString());
+		System.out.println(CommandFactory.newInstance().parseHPGLCode("SP1;", configuration).getGCodeString());
+		System.out.println(CommandFactory.newInstance().parseHPGLCode("PU;", configuration).getGCodeString());
+		System.out.println(CommandFactory.newInstance().parseHPGLCode("PT0;", configuration).getGCodeString());
+		System.out.println(CommandFactory.newInstance().parseHPGLCode("PA25,464;", configuration).getGCodeString());
+		System.out.println(CommandFactory.newInstance().parseHPGLCode("PA25", configuration).getGCodeString());
+		//System.out.println(CommandFactory.newInstance().parseHPGLCode("PA25;", configuration).getGCodeString());
+		MainView view = new MainView(this);
 	}
 	
 	// Singleton pattern, only 1 instance may exist! Use .newInstance() to retrieve a Controller instance
@@ -49,7 +59,7 @@ public class Controller {
 		return controller;
 	}
 	
-	// Launch the Controller on application init
+	// Launch the Controller on application start
 	public static void main(String[] args) {
 		Controller controller = Controller.newInstance();
 	}
