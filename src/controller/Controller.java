@@ -19,36 +19,38 @@ package controller;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
-import model.CommandFactory;
 import model.Configuration;
+import model.GCodeWriter;
 import model.HPGLReader;
-import view.MainView;
+import model.Job;
 
 public class Controller {
 	private static Controller controller;
 	
 	private Controller() {
 		// Controller stuff
-		/*FileReader file;
-		try {
-			file = new FileReader("/home/dylan/Projects/eclipse-workspace/java-hpgl2gcode/test/randomLEDController_Pen3.plt");
-			HPGLReader reader = new HPGLReader(file);
-			reader.start();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
 		// Configuration for each JOB: engraving, milling, drilling all different jobs!
-		Configuration configuration = new Configuration(20000, 10.0, -0.165, 500, 300, 40.0, 3.0); // USER BASED config via GUI
-		System.out.println(CommandFactory.newInstance().parseHPGLCode("IN;", configuration).getGCodeString());
-		System.out.println(CommandFactory.newInstance().parseHPGLCode("SP1;", configuration).getGCodeString());
-		System.out.println(CommandFactory.newInstance().parseHPGLCode("PU;", configuration).getGCodeString());
-		System.out.println(CommandFactory.newInstance().parseHPGLCode("PT0;", configuration).getGCodeString());
-		System.out.println(CommandFactory.newInstance().parseHPGLCode("PA25,464;", configuration).getGCodeString());
-		System.out.println(CommandFactory.newInstance().parseHPGLCode("PA25", configuration).getGCodeString());
-		//System.out.println(CommandFactory.newInstance().parseHPGLCode("PA25;", configuration).getGCodeString());
-		MainView view = new MainView(this);
+		Configuration configuration = new Configuration(20000, 10.0, -0.165, 500, 300, 40.0, 3.0);
+		Job job = new Job(configuration);	
+		
+		try {
+			FileReader fileIn = new FileReader("/home/dylan/Projects/eclipse-workspace/java-hpgl2gcode/test/randomLEDController_Pen3.plt");
+			HPGLReader reader = new HPGLReader(fileIn, job);
+			reader.start();
+			reader.join(); // wait until everything is read
+			FileWriter fileOut = new FileWriter("/home/dylan/Projects/eclipse-workspace/java-hpgl2gcode/test/randomLEDController_engraving.gcode");
+			GCodeWriter writer = new GCodeWriter(fileOut, job);
+			writer.start();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	// Singleton pattern, only 1 instance may exist! Use .newInstance() to retrieve a Controller instance
@@ -60,6 +62,7 @@ public class Controller {
 	}
 	
 	// Launch the Controller on application start
+	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 		Controller controller = Controller.newInstance();
 	}

@@ -22,5 +22,10 @@ public class ToolSize extends Command {
 	public void setConfiguration(Configuration configuration) {
 		this.configuration = configuration;
 	}
+	
+	@Override
+	public String toString() {
+		return "ToolSize(" + this.getId() + ")";
+	}
 
 }

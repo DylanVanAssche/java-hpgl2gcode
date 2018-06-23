@@ -21,7 +21,6 @@ import model.commands.*;
 
 public class CommandFactory {
 	private static CommandFactory factory;
-	private static final String COMMAND_REGEX = "[A-Z][A-Z]";
 	
 	private CommandFactory() {
 		System.out.println("CommandFactory created");

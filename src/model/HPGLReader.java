@@ -20,34 +20,57 @@ package model;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
+
+import model.commands.Command;
 
 public class HPGLReader extends Thread {
 	private BufferedReader input;
-	private ArrayList<String> commandList = new ArrayList<String>();
+	private Job job;
 	
-	public HPGLReader(FileReader input) {
-		this.input = new BufferedReader(input);
+	public HPGLReader(FileReader input, Job job) {
+		super();
+		this.setInput(new BufferedReader(input));
+		this.setJob(job);
 	}
 	
+	public BufferedReader getInput() {
+		return input;
+	}
+
+	public void setInput(BufferedReader input) {
+		this.input = input;
+	}
+	
+	public Job getJob() {
+		return job;
+	}
+
+	public void setJob(Job job) {
+		this.job = job;
+	}
+
 	public void run() {
-		Exception error;
 		while(true) {
 			try {
-				String line = this.input.readLine();
-				if(line != null) {
-					this.commandList.add(line);
-				}
-				else {
-					break;
+				synchronized(this.getJob()) {
+					String line = this.getInput().readLine();
+					if(line != null) {
+						
+							Command command = CommandFactory.newInstance().parseHPGLCode(line, this.getJob().getConfiguration());
+							this.getJob().getCommands().add(command);
+							this.getJob().notify();
+					}
+					else {
+						break;
+					}
 				}
 			} catch (IOException e) {
-				error = e;
 				e.printStackTrace();
 				break;
 			}
 		}
 		
-		System.out.println(this.commandList);
+		System.out.println(this.getJob().getCommands());
 	}
+
 }
