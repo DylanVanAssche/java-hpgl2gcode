@@ -21,12 +21,14 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import model.Configuration;
 import model.GCodeWriter;
 import model.HPGLReader;
 import model.Job;
 import view.MainView;
+import view.SelectFile;
 
 public class Controller {
 	private static Controller controller;
@@ -38,24 +40,6 @@ public class Controller {
 		// Controller stuff
 		// Configuration for each JOB: engraving, milling, drilling all different jobs!
 		MainView view = new MainView(this);
-		Configuration configuration = new Configuration(20000, 10.0, -0.165, 500, 300, 40.0, 3.0);
-		Job job = new Job(configuration);	
-		
-		try {
-			FileReader fileIn = new FileReader("/home/dylan/Projects/eclipse-workspace/java-hpgl2gcode/test/randomLEDController_Pen3.plt");
-			HPGLReader reader = new HPGLReader(fileIn, job);
-			reader.start();
-			reader.join(); // wait until everything is read
-			FileWriter fileOut = new FileWriter("/home/dylan/Projects/eclipse-workspace/java-hpgl2gcode/test/randomLEDController_engraving.gcode");
-			GCodeWriter writer = new GCodeWriter(fileOut, job);
-			writer.start();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	// Singleton pattern, only 1 instance may exist! Use .newInstance() to retrieve a Controller instance
@@ -94,6 +78,34 @@ public class Controller {
 	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 		Controller controller = Controller.newInstance();
+	}
+
+	public void convert(ArrayList<SelectFile> pickers) {
+		ArrayList<Job> jobs = new ArrayList<Job>();
+		Configuration configuration = new Configuration(20000, 10.0, -0.165, 500, 300, 40.0, 3.0);
+		
+		for(int i=0; i<pickers.size(); i++) {
+			jobs.add(i, new Job(configuration));
+			
+			try {
+				// Write this properly
+				if(pickers.get(i).isSelected()) {
+					FileReader fileIn = new FileReader(pickers.get(i).getPickedFileName().getText());
+					HPGLReader reader = new HPGLReader(fileIn, jobs.get(i));
+					reader.start();
+					reader.join(); // wait until everything is read
+					FileWriter fileOut = new FileWriter(pickers.get(i).getPickedFileName().getText() + ".gcode");
+					GCodeWriter writer = new GCodeWriter(fileOut, jobs.get(i));
+					writer.start();
+				}
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 }
