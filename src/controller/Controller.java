@@ -26,13 +26,18 @@ import model.Configuration;
 import model.GCodeWriter;
 import model.HPGLReader;
 import model.Job;
+import view.MainView;
 
 public class Controller {
 	private static Controller controller;
+	private String author = "Dylan Van Assche";
+	private String version = "V1.0.0";
+	private String name = "HPGL2Gcode";
 	
 	private Controller() {
 		// Controller stuff
 		// Configuration for each JOB: engraving, milling, drilling all different jobs!
+		MainView view = new MainView(this);
 		Configuration configuration = new Configuration(20000, 10.0, -0.165, 500, 300, 40.0, 3.0);
 		Job job = new Job(configuration);	
 		
@@ -61,6 +66,30 @@ public class Controller {
 		return controller;
 	}
 	
+	public String getAuthor() {
+		return author;
+	}
+
+	public void setAuthor(String author) {
+		this.author = author;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	// Launch the Controller on application start
 	@SuppressWarnings("unused")
 	public static void main(String[] args) {
