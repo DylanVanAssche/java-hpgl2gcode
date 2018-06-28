@@ -23,15 +23,20 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 import model.Configuration;
 import model.GCodeWriter;
 import model.HPGLReader;
 import model.Job;
+import view.ConfigurationView;
 import view.MainView;
 import view.SelectFile;
+import view.SelectFileList;
 
 public class Controller {
 	private static Controller controller;
+	private MainView view;
 	private String author = "Dylan Van Assche";
 	private String version = "V1.0.0";
 	private String name = "HPGL2Gcode";
@@ -39,7 +44,7 @@ public class Controller {
 	private Controller() {
 		// Controller stuff
 		// Configuration for each JOB: engraving, milling, drilling all different jobs!
-		MainView view = new MainView(this);
+		this.setView(new MainView(this));
 	}
 	
 	// Singleton pattern, only 1 instance may exist! Use .newInstance() to retrieve a Controller instance
@@ -74,38 +79,49 @@ public class Controller {
 		this.name = name;
 	}
 
+	public MainView getView() {
+		return view;
+	}
+
+	public void setView(MainView view) {
+		this.view = view;
+	}
+
 	// Launch the Controller on application start
 	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 		Controller controller = Controller.newInstance();
 	}
 
-	public void convert(ArrayList<SelectFile> pickers) {
+	public void convert() {
 		ArrayList<Job> jobs = new ArrayList<Job>();
-		Configuration configuration = new Configuration(20000, 10.0, -0.165, 500, 300, 40.0, 3.0);
-		
-		for(int i=0; i<pickers.size(); i++) {
+		SelectFileList pickers = this.getView().getPickers();
+				
+		for(int i=0; i<pickers.getFilePaths().size(); i++) {
+			Configuration configuration = this.getView().getConfiguration().generate(ConfigurationView.ENGRAVING);
 			jobs.add(i, new Job(configuration));
 			
 			try {
 				// Write this properly
-				if(pickers.get(i).isSelected()) {
-					FileReader fileIn = new FileReader(pickers.get(i).getPickedFileName().getText());
-					HPGLReader reader = new HPGLReader(fileIn, jobs.get(i));
-					reader.start();
-					reader.join(); // wait until everything is read
-					FileWriter fileOut = new FileWriter(pickers.get(i).getPickedFileName().getText() + ".gcode");
-					GCodeWriter writer = new GCodeWriter(fileOut, jobs.get(i));
-					writer.start();
-				}
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
+				FileReader fileIn = new FileReader(pickers.getFilePaths().get(i).getAbsoluteFilePath());
+				HPGLReader reader = new HPGLReader(fileIn, jobs.get(i));
+				reader.start();
+				reader.join(); // wait until everything is read
+				FileWriter fileOut = new FileWriter(pickers.getFilePaths().get(i).getAbsoluteFilePath() + ".gcode");
+				GCodeWriter writer = new GCodeWriter(fileOut, jobs.get(i));
+				writer.start();
+			} 
+			catch (InterruptedException | IOException exception) {
+				exception.printStackTrace();
+				JOptionPane.showMessageDialog(null, exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
 			}
 		}
+	}
+	
+	public void addFilePath(String path) {
+		System.out.println("Controller: " + path);
+		this.getView().getPickers().addFilePath(new SelectFile(this, path));
+		this.getView().pack();
 	}
 	
 }

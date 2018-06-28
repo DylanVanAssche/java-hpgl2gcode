@@ -1,40 +1,54 @@
 package view;
 
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-
-import java.awt.Component;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
+
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import controller.Controller;
 
 public class SelectFile extends JPanel {
-	Controller controller;
-	JFileChooser picker;
-	JButton showPickerButton;
-	JTextField pickedFileName;
+	private static final int SPACING = 10;
+	private static final int ENGRAVING = 0;
+	private static final int DRILLING = 1;
+	private static final int MILLING = 2;
+	private static final String[] MODES = {"engraving", "drilling", "milling"};
+	private static final String FONT = "Courier New";
+	private Controller controller;
+	private JLabel filePath;
+	private JComboBox<String> fileType;
+	private int mode;
 	
-	public SelectFile(Controller controller) {
-		GridLayout layout = new GridLayout(0, 2);
+	public SelectFile(Controller controller, String path) {
+		this.setController(controller);
+		GridLayout layout = new GridLayout(1, 0);
+		layout.setHgap(SPACING);
 		this.setLayout(layout);
-		this.setPicker(new JFileChooser());
-		this.getPicker().setCurrentDirectory(new File(System.getProperty("user.home")));
-		this.setShowPickerButton(new JButton("Pick"));
-		this.getShowPickerButton().addActionListener(new ActionListener() {
+		this.setFilePath(new JLabel(path));
+		this.setFileType(new JComboBox<String>(MODES));
+		this.getFileType().setFont(new Font(FONT, Font.PLAIN, 12));
+		this.getFileType().addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				showPicker();
+				switch(getFileType().getSelectedItem().toString()) {
+				case "engraving":
+					setMode(ENGRAVING);
+					break;
+				case "drilling":
+					setMode(DRILLING);
+					break;
+				case "milling":
+					setMode(MILLING);
+					break;
+				}
 			}
 		});
-		this.setPickedFileName(new JTextField(""));
-		this.getPickedFileName().setEditable(false);
-		this.add(this.getPickedFileName());
-		this.add(this.getShowPickerButton());
+		this.add(this.getFilePath());
+		this.add(this.getFileType());
 	}
 
 	public Controller getController() {
@@ -45,42 +59,31 @@ public class SelectFile extends JPanel {
 		this.controller = controller;
 	}
 
-	public JFileChooser getPicker() {
-		return picker;
+	public JLabel getFilePath() {
+		return filePath;
 	}
 
-	public void setPicker(JFileChooser picker) {
-		this.picker = picker;
+	public void setFilePath(JLabel filePath) {
+		this.filePath = filePath;
+	}
+
+	public JComboBox<String> getFileType() {
+		return fileType;
+	}
+
+	public void setFileType(JComboBox<String> fileType) {
+		this.fileType = fileType;
+	}
+
+	public String getAbsoluteFilePath() {
+		return this.getFilePath().getText();
 	}
 	
-	public JButton getShowPickerButton() {
-		return showPickerButton;
+	public int getMode() {
+		return this.mode;
 	}
 
-	public void setShowPickerButton(JButton showPickerButton) {
-		this.showPickerButton = showPickerButton;
-	}
-
-	public JTextField getPickedFileName() {
-		return pickedFileName;
-	}
-
-	public void setPickedFileName(JTextField pickedFileName) {
-		this.pickedFileName = pickedFileName;
-	}
-
-	public void showPicker() {
-		int result = this.getPicker().showOpenDialog(this);
-		if (result == JFileChooser.APPROVE_OPTION) {
-		    File selectedFile = this.getPicker().getSelectedFile();
-		    this.getPickedFileName().setText(selectedFile.getAbsolutePath());
-		}
-		else {
-			System.err.println("File picking declined");
-		}
-	}
-	
-	public boolean isSelected() {
-		return this.getPickedFileName().getText().length() > 0;
+	public void setMode(int mode) {
+		this.mode = mode;
 	}
 }

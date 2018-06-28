@@ -1,9 +1,7 @@
 package view;
 
 import java.awt.Container;
-import java.util.ArrayList;
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 
 import controller.Controller;
@@ -12,22 +10,20 @@ public class MainView extends JFrame {
 	private Controller controller;
 	private MenuBar menu;
 	private ButtonRow buttons;
-	private ArrayList<SelectFile> pickers = new ArrayList<SelectFile>();
-	private static final int NUMBER_OF_DRILLINGFILES = 4;
+	private SelectFileList pickers;
+	private ConfigurationView configuration;
 		
 	public MainView(Controller controller) {
 		this.setController(controller);
 		this.setTitle(this.getController().getName());
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setJMenuBar(new MenuBar(this.getController()));
-		for(int i=0; i < NUMBER_OF_DRILLINGFILES + 2; i++) {
-			this.getPickers().add(new SelectFile(this.getController()));
-		}
-		this.setButtons(new ButtonRow(this.getController(), this.getPickers()));
+		this.setButtons(new ButtonRow(this.getController()));
+		this.setPickers(new SelectFileList(this.getController()));
+		this.setConfiguration(new ConfigurationView(this.getController()));
 		Container content = this.getContentPane();
-		for(int i=0; i < NUMBER_OF_DRILLINGFILES + 2; i++) {
-			content.add(this.getPickers().get(i));
-		}
+		content.add(this.getPickers());
+		content.add(this.getConfiguration());
 		content.add(this.getButtons());
 		this.setLayout(new BoxLayout(content, BoxLayout.PAGE_AXIS));
 		this.pack();
@@ -58,11 +54,19 @@ public class MainView extends JFrame {
 		this.buttons = buttons;
 	}
 
-	public ArrayList<SelectFile> getPickers() {
+	public SelectFileList getPickers() {
 		return pickers;
 	}
 
-	public void setPickers(ArrayList<SelectFile> pickers) {
+	public void setPickers(SelectFileList pickers) {
 		this.pickers = pickers;
+	}
+
+	public ConfigurationView getConfiguration() {
+		return configuration;
+	}
+
+	public void setConfiguration(ConfigurationView configuration) {
+		this.configuration = configuration;
 	}
 }
