@@ -6,6 +6,8 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+
+import javax.swing.Box;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -22,6 +24,7 @@ public class MenuBar extends JMenuBar {
 	public MenuBar(Controller controller) {
 		this.setController(controller);
 		this.setAboutMenu(new JMenu("About"));
+		this.add(Box.createHorizontalGlue());
 		this.add(this.getAboutMenu());
 		this.setApplicationAboutMenu(new JMenuItem("Application"));
 		this.getApplicationAboutMenu().setToolTipText("About " + this.getController().getName());
