@@ -5,8 +5,11 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
+
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import controller.Controller;
@@ -27,7 +30,13 @@ public class ButtonRow extends JPanel {
 		this.getConvertButton().addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				getController().convert();				
+				try {
+					getController().convert();
+				} 
+				catch (IOException | InterruptedException exception) {
+					exception.printStackTrace();
+					JOptionPane.showMessageDialog(null, exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+				}				
 			}
 		});
 		this.setAddButton(new JButton("Add file"));

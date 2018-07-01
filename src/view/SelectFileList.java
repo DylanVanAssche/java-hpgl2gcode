@@ -11,7 +11,6 @@ import controller.Controller;
 public class SelectFileList extends JPanel {
 	private Controller controller;
 	private DefaultListModel<SelectFile> filePaths = new DefaultListModel<SelectFile>();
-	private ArrayList<SelectFile> filePathsList = new ArrayList<SelectFile>(); 
 
 	public SelectFileList(Controller controller) {
 		this.setController(controller);
@@ -29,21 +28,27 @@ public class SelectFileList extends JPanel {
 	public DefaultListModel<SelectFile> getFilePaths() {
 		return filePaths;
 	}
-
+	
 	public void setFilePaths(DefaultListModel<SelectFile> filePaths) {
 		this.filePaths = filePaths;
 	}
-
-	public ArrayList<SelectFile> getFilePathsList() {
-		return filePathsList;
-	}
-
-	public void setFilePathsList(ArrayList<SelectFile> filePathsList) {
-		this.filePathsList = filePathsList;
+	
+	private void updateView() {
+		this.removeAll();
+		for(int i=0; i<this.getFilePaths().size(); i++) {
+			this.add(this.getFilePaths().get(i));
+		}
+		this.revalidate();
+		this.repaint();
 	}
 	
 	public void addFilePath(SelectFile path) {
 		this.getFilePaths().addElement(path);
-		this.add(path);
+		this.updateView();
+	}
+
+	public void removeFile(SelectFile file) {
+		this.getFilePaths().removeElement(file);
+		this.updateView();
 	}
 }

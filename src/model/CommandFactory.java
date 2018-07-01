@@ -23,7 +23,7 @@ public class CommandFactory {
 	private static CommandFactory factory;
 	
 	private CommandFactory() {
-		System.out.println("CommandFactory created");
+		System.out.println("CommandFactory created, at your service :-)");
 	}
 	
 	public static CommandFactory newInstance() {

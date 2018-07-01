@@ -4,7 +4,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -21,6 +21,7 @@ public class SelectFile extends JPanel {
 	private Controller controller;
 	private JLabel filePath;
 	private JComboBox<String> fileType;
+	private JButton fileDelete;
 	private int mode;
 	
 	public SelectFile(Controller controller, String path) {
@@ -47,8 +48,16 @@ public class SelectFile extends JPanel {
 				}
 			}
 		});
+		this.setFileDelete(new JButton("Remove"));
+		this.getFileDelete().addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				getController().removeFile(getThis());
+			}
+		});
 		this.add(this.getFilePath());
 		this.add(this.getFileType());
+		this.add(this.getFileDelete());
 	}
 
 	public Controller getController() {
@@ -85,5 +94,18 @@ public class SelectFile extends JPanel {
 
 	public void setMode(int mode) {
 		this.mode = mode;
+	}
+
+	public JButton getFileDelete() {
+		return fileDelete;
+	}
+
+	public void setFileDelete(JButton fileDelete) {
+		this.fileDelete = fileDelete;
+	}
+	
+	// Workaround for anonymous class
+	private SelectFile getThis() {
+		return this;
 	}
 }

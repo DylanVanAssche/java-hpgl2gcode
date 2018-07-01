@@ -17,6 +17,7 @@
 
 package controller;
 
+import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -93,34 +94,17 @@ public class Controller {
 		Controller controller = Controller.newInstance();
 	}
 
-	public void convert() {
-		ArrayList<Job> jobs = new ArrayList<Job>();
-		SelectFileList pickers = this.getView().getPickers();
-				
-		for(int i=0; i<pickers.getFilePaths().size(); i++) {
-			Configuration configuration = this.getView().getConfiguration().generate(ConfigurationView.ENGRAVING);
-			jobs.add(i, new Job(configuration));
-			
-			try {
-				// Write this properly
-				FileReader fileIn = new FileReader(pickers.getFilePaths().get(i).getAbsoluteFilePath());
-				HPGLReader reader = new HPGLReader(fileIn, jobs.get(i));
-				reader.start();
-				reader.join(); // wait until everything is read
-				FileWriter fileOut = new FileWriter(pickers.getFilePaths().get(i).getAbsoluteFilePath() + ".gcode");
-				GCodeWriter writer = new GCodeWriter(fileOut, jobs.get(i));
-				writer.start();
-			} 
-			catch (InterruptedException | IOException exception) {
-				exception.printStackTrace();
-				JOptionPane.showMessageDialog(null, exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
-			}
-		}
+	public void convert() throws IOException, InterruptedException {
+		Processor.convert(this);
 	}
 	
 	public void addFilePath(String path) {
-		System.out.println("Controller: " + path);
 		this.getView().getPickers().addFilePath(new SelectFile(this, path));
+		this.getView().pack();
+	}
+
+	public void removeFile(SelectFile file) {
+		this.getView().getPickers().removeFile(file);
 		this.getView().pack();
 	}
 	

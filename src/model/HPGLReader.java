@@ -55,7 +55,6 @@ public class HPGLReader extends Thread {
 				synchronized(this.getJob()) {
 					String line = this.getInput().readLine();
 					if(line != null) {
-						
 							Command command = CommandFactory.newInstance().parseHPGLCode(line, this.getJob().getConfiguration());
 							this.getJob().getCommands().add(command);
 							this.getJob().notify();
@@ -69,7 +68,6 @@ public class HPGLReader extends Thread {
 				break;
 			}
 		}
-		
 		System.out.println(this.getJob().getCommands());
 	}
 
